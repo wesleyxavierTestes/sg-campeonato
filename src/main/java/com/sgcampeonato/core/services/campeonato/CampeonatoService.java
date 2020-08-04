@@ -14,7 +14,4 @@ public class CampeonatoService extends BaseService<Campeonato> {
     public CampeonatoService(CampeonatoRepository repository) {
         super(repository);
     }
-    
-    
-
 }

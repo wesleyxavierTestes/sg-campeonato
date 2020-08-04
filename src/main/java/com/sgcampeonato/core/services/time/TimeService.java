@@ -15,6 +15,5 @@ public class TimeService extends BaseService<Time> {
         super(repository);
     }
     
-    
 
 }

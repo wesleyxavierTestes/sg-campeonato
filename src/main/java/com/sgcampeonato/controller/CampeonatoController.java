@@ -9,11 +9,11 @@ import java.util.UUID;
 import com.sgcampeonato.application.exceptions.RegraBaseException;
 import com.sgcampeonato.core.entitys.campeonato.Campeonato;
 import com.sgcampeonato.core.services.campeonato.CampeonatoService;
+import com.sgcampeonato.utils.BaseController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/campeonato")
-public class CampeonatoController {
+public class CampeonatoController extends BaseController {
     
     @Autowired
     private CampeonatoService campeonatoService;
 
-    @ExceptionHandler(RegraBaseException.class)
-    public ResponseEntity error(RegraBaseException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    @GetMapping("novo")
+    public ResponseEntity<Campeonato> novo() {
+        return ResponseEntity.ok(new Campeonato());
     }
 
     @GetMapping("list")
@@ -36,7 +36,7 @@ public class CampeonatoController {
         @RequestParam(name = "page") int page) {
 
         Page<Campeonato> list = campeonatoService.list(page);
-        
+
         return ResponseEntity.ok(list);
     }
 
@@ -61,6 +61,14 @@ public class CampeonatoController {
     public ResponseEntity<Campeonato> update(@RequestBody Campeonato entity) {
         
         Campeonato find = campeonatoService.update(entity);
+        
+        return ResponseEntity.ok(find);
+    }
+
+    @PutMapping("delete")
+    public ResponseEntity<Campeonato> delete(@RequestParam(name = "id") String id) {
+        
+        Campeonato find = campeonatoService.delete(UUID.fromString(id));
         
         return ResponseEntity.ok(find);
     }

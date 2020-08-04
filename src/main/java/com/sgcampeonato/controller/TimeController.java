@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import com.sgcampeonato.core.entitys.time.Time;
 import com.sgcampeonato.core.services.time.TimeService;
+import com.sgcampeonato.utils.BaseController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,12 +21,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/time")
-public class TimeController {
+public class TimeController extends BaseController {
     
     @Autowired
     private TimeService timeService;
 
-    @ExceptionHandler()
+    @GetMapping("novo")
+    public ResponseEntity<Time> novo() {
+        return ResponseEntity.ok(new Time());
+    }
 
     @GetMapping("list")
     public ResponseEntity<Page<Time>> list(
@@ -57,6 +61,14 @@ public class TimeController {
     public ResponseEntity<Time> update(@RequestBody Time entity) {
         
         Time find = timeService.update(entity);
+        
+        return ResponseEntity.ok(find);
+    }
+
+    @PutMapping("delete")
+    public ResponseEntity<Time> delete(@RequestParam(name = "id") String id) {
+        
+        Time find = timeService.delete(UUID.fromString(id));
         
         return ResponseEntity.ok(find);
     }

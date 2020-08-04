@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 import com.sgcampeonato.core.entitys.partidaCampeonato.PartidaCampeonato;
+import com.sgcampeonato.core.enuns.EnumSituacao;
+import com.sgcampeonato.core.enuns.EnumVencedor;
 import com.sgcampeonato.core.services.partidaCampeonato.PartidaCampeonatoService;
+import com.sgcampeonato.utils.BaseController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,13 +22,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/api/partidaCampeonato")
-public class PartidaCampeonatoController {
+@RequestMapping("/api/partidacampeonato")
+public class PartidaCampeonatoController extends BaseController {
     
     @Autowired
     private PartidaCampeonatoService partidaCampeonatoService;
 
-    @ExceptionHandler()
+    @GetMapping("novo")
+    public ResponseEntity<PartidaCampeonato> novo() {
+        return ResponseEntity.ok(new PartidaCampeonato());
+    }
 
     @GetMapping("list")
     public ResponseEntity<Page<PartidaCampeonato>> list(
@@ -40,8 +46,7 @@ public class PartidaCampeonatoController {
     public ResponseEntity<PartidaCampeonato> find(
         @RequestParam(name = "id") String id) {
 
-        PartidaCampeonato find = partidaCampeonatoService.find(UUID.fromString(id));
-        
+        PartidaCampeonato find = partidaCampeonatoService.find(UUID.fromString(id));        
         return ResponseEntity.ok(find);
     }
 
@@ -54,9 +59,20 @@ public class PartidaCampeonatoController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<PartidaCampeonato> update(@RequestBody PartidaCampeonato entity) {
+    public ResponseEntity<PartidaCampeonato> updateSituacao(
+        @RequestParam(name = "id") String id, 
+        @RequestParam(name = "situacao") EnumSituacao situacao,
+        @RequestParam(name = "vencedor") EnumVencedor vencedor) {
+
+        PartidaCampeonato find = partidaCampeonatoService.updateSituacao(UUID.fromString(id), situacao, vencedor);
         
-        PartidaCampeonato find = partidaCampeonatoService.update(entity);
+        return ResponseEntity.ok(find);
+    }
+
+    @PutMapping("delete")
+    public ResponseEntity<PartidaCampeonato> delete(@RequestParam(name = "id") String id) {
+        
+        PartidaCampeonato find = partidaCampeonatoService.delete(UUID.fromString(id));
         
         return ResponseEntity.ok(find);
     }
