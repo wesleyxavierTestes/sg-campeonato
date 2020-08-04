@@ -34,7 +34,8 @@ public class CampeonatoController extends BaseController {
     @GetMapping("list")
     public ResponseEntity<Page<CampeonatoDto>> list(@RequestParam(name = "page") int page) {
 
-        Page<CampeonatoDto> list = campeonatoService.list(page).map(model -> CampeonatoMapper.to(model));
+        Page<CampeonatoDto> list = campeonatoService.list(page)
+        .map(model -> CampeonatoMapper.to(model));
 
         return ResponseEntity.ok(list);
     }
@@ -71,7 +72,8 @@ public class CampeonatoController extends BaseController {
     @PutMapping("delete")
     public ResponseEntity<CampeonatoDto> delete(@RequestParam(name = "id") String id) {
 
-        CampeonatoDto find = CampeonatoMapper.to(campeonatoService.delete(UUID.fromString(id)));
+        Campeonato delete = campeonatoService.delete(UUID.fromString(id));
+        CampeonatoDto find = CampeonatoMapper.to(delete);
 
         return ResponseEntity.ok(find);
     }

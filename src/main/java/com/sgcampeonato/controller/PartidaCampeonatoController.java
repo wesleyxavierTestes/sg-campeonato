@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import com.sgcampeonato.application.dto.PartidaCampeonatoDto;
+import com.sgcampeonato.application.mappers.PartidaCampeonatoMapper;
 import com.sgcampeonato.core.entitys.partidaCampeonato.PartidaCampeonato;
 import com.sgcampeonato.core.enuns.EnumSituacao;
 import com.sgcampeonato.core.enuns.EnumVencedor;
@@ -15,7 +17,6 @@ import com.sgcampeonato.utils.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,10 +35,11 @@ public class PartidaCampeonatoController extends BaseController {
     }
 
     @GetMapping("list")
-    public ResponseEntity<Page<PartidaCampeonato>> list(
+    public ResponseEntity<Page<PartidaCampeonatoDto>> list(
         @RequestParam(name = "page") int page) {
 
-        Page<PartidaCampeonato> list = partidaCampeonatoService.list(page);
+        Page<PartidaCampeonatoDto> list = partidaCampeonatoService.list(page)
+        .map(model -> PartidaCampeonatoMapper.to(model));
         
         return ResponseEntity.ok(list);
     }
