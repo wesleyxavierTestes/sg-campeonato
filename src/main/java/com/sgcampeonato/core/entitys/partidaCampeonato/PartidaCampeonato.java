@@ -35,16 +35,6 @@ public class PartidaCampeonato extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime dataPartida;
 
-    @JsonSetter("dataPartida")
-    public void setJsonDataPartida(String data) {
-        this.dataPartida = LocalDateTime.parse(data);
-    }
-
-    @JsonGetter("dataPartida")
-    public String getJsonDataPartida(String data) {
-        return this.dataPartida.toString();
-    }
-
     @ManyToOne(fetch = FetchType.EAGER)
     private Time timeA;
 

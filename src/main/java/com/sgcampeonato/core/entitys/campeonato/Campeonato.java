@@ -31,32 +31,10 @@ public class Campeonato extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    @JsonIgnore
     private LocalDateTime dateInit;
 
     @Column(nullable = false)
-    @JsonIgnore
     private LocalDateTime dateEnd;
-
-    @JsonSetter("dateInit")
-    public void setJsonDataInit(String data) {
-        this.dateInit = LocalDateTime.parse(data);
-    }
-
-    @JsonGetter("dateInit")
-    public String getJsonDataInit(String data) {
-        return this.dateInit.toString();
-    }
-
-    @JsonSetter("dateEnd")
-    public void setJsonDataEnd(String data) {
-        this.dateEnd = LocalDateTime.parse(data);
-    }
-
-    @JsonGetter("dateEnd")
-    public String getJsonDataEnd(String data) {
-        return this.dateEnd.toString();
-    }
 
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @Column(nullable = true)
