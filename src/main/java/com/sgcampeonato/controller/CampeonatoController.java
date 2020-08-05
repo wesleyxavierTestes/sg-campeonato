@@ -1,10 +1,16 @@
 package com.sgcampeonato.controller;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.sgcampeonato.application.dto.CampeonatoDto;
+import com.sgcampeonato.application.dto.ColocacaoDto;
+import com.sgcampeonato.application.dto.TimeDto;
 import com.sgcampeonato.application.mappers.CampeonatoMapper;
+import com.sgcampeonato.application.mappers.TimeMapper;
 import com.sgcampeonato.core.entitys.campeonato.Campeonato;
+import com.sgcampeonato.core.entitys.time.Time;
 import com.sgcampeonato.core.services.campeonato.CampeonatoService;
 import com.sgcampeonato.utils.BaseController;
 
@@ -49,6 +55,32 @@ public class CampeonatoController extends BaseController {
         return ResponseEntity.ok(findDto);
     }
 
+    @GetMapping("list/times")
+    public ResponseEntity<Page<TimeDto>> findTimes(
+        @RequestParam(name = "page") int page, @RequestParam(name = "id") String id) {
+
+        Campeonato find = campeonatoService.find(UUID.fromString(id));
+        
+        Page<Time> times = campeonatoService.times(find, page);
+
+        Page<TimeDto> timesDto = times.map(model -> TimeMapper.to(model));
+
+        return ResponseEntity.ok(timesDto);
+    }
+
+    @GetMapping("list/times/colocacao")
+    public ResponseEntity<List<ColocacaoDto>> findTimesColocacao(@RequestParam(name = "id") String id) {
+
+        Campeonato find = campeonatoService.find(UUID.fromString(id));
+        
+        campeonatoService.configurePartidas(find);  
+
+        List<ColocacaoDto> times = find.colocacaoTimes();
+
+        return ResponseEntity.ok(times);
+    }
+
+    
     @PostMapping("save")
     public ResponseEntity<CampeonatoDto> save(@RequestBody CampeonatoDto entity) {
 

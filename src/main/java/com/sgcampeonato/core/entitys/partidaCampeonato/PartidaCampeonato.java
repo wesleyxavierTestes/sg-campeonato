@@ -9,8 +9,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.sgcampeonato.core.entitys.BaseEntity;
 import com.sgcampeonato.core.entitys.campeonato.Campeonato;
 import com.sgcampeonato.core.entitys.time.Time;
@@ -35,6 +33,12 @@ public class PartidaCampeonato extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime dataPartida;
 
+    @Column(nullable = false)
+    private int golsA;
+
+    @Column(nullable = false)
+    private int golsB;
+
     @ManyToOne(fetch = FetchType.EAGER)
     private Time timeA;
 
@@ -42,28 +46,47 @@ public class PartidaCampeonato extends BaseEntity {
     private Time timeB;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
     private EnumVencedor vencedor;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EnumSituacao situacao;
 
     public int ponto(Time time) {
-        if (this.vencedor.equals(EnumVencedor.Empate)) {
-            return 1;
-        } else if (validarTimeA(time)) {
-            return 3;
-        } else if (validarTimeB(time)) {
-            return 3;
-        } else {
-            return 0;
+        if (situacao == EnumSituacao.Finalizada) {
+            if (this.vencedor.equals(EnumVencedor.Empate))
+                return 1;
+            if (validarVitoriaTimeA(time))
+                return 3;
+            if (validarVitoriaTimeB(time))
+                return 3;
         }
+        return 0;
     }
 
-    private boolean validarTimeB(Time time) {
-        return this.vencedor.equals(EnumVencedor.TimeB) && time.getId() == (this.timeB.getId());
+    public int gols(Time time) {
+        if (isTimeA(time))
+            return this.golsA;
+        else if (isTimeB(time))
+            return this.golsB;
+        else
+            return 0;
     }
 
-    private boolean validarTimeA(Time time) {
-        return this.vencedor.equals(EnumVencedor.TimeA) && time.getId() == (this.timeA.getId());
+    private boolean validarVitoriaTimeB(Time time) {
+        return this.vencedor.equals(EnumVencedor.TimeB) && isTimeB(time);
+    }
+
+    private boolean isTimeB(Time time) {
+        return time.getId() == (this.timeB.getId());
+    }
+
+    private boolean validarVitoriaTimeA(Time time) {
+        return this.vencedor.equals(EnumVencedor.TimeA) && isTimeA(time);
+    }
+
+    private boolean isTimeA(Time time) {
+        return time.getId() == (this.timeA.getId());
     }
 }

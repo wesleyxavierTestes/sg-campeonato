@@ -2,7 +2,6 @@ package com.sgcampeonato.core.entitys.time;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,7 +24,7 @@ import lombok.Setter;
 @Entity
 public class Time extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY)
@@ -34,6 +33,9 @@ public class Time extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY)
     private List<PartidaCampeonato> partidas;
 
+    @Transient
+    private int colocacao;
+
     public int pontos() {
         int ponto = 0;
         
@@ -41,5 +43,14 @@ public class Time extends BaseEntity {
             ponto += partida.ponto(this);
 
         return ponto;
+    }
+
+    public int gols() {
+        int gols = 0;
+        
+        for (PartidaCampeonato partida : partidas)
+            gols += partida.gols(this);
+
+        return gols;
     }
 }

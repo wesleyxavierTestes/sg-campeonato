@@ -35,46 +35,51 @@ public class PartidaCampeonatoController extends BaseController {
     }
 
     @GetMapping("list")
-    public ResponseEntity<Page<PartidaCampeonatoDto>> list(
-        @RequestParam(name = "page") int page) {
+    public ResponseEntity<Page<PartidaCampeonatoDto>> list(@RequestParam(name = "page") int page) {
 
         Page<PartidaCampeonatoDto> list = partidaCampeonatoService.list(page)
         .map(model -> PartidaCampeonatoMapper.to(model));
-        
+
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("find")
-    public ResponseEntity<PartidaCampeonato> find(
-        @RequestParam(name = "id") String id) {
+    public ResponseEntity<PartidaCampeonatoDto> find(@RequestParam(name = "id") String id) {
 
-        PartidaCampeonato find = partidaCampeonatoService.find(UUID.fromString(id));        
-        return ResponseEntity.ok(find);
+        PartidaCampeonato find = partidaCampeonatoService.find(UUID.fromString(id));
+        PartidaCampeonatoDto findDto = PartidaCampeonatoMapper.to(find);
+
+        return ResponseEntity.ok(findDto);
     }
 
     @PostMapping("save")
-    public ResponseEntity<PartidaCampeonato> save(@RequestBody PartidaCampeonato entity)  {
-        
-        PartidaCampeonato find = partidaCampeonatoService.save(entity);
-        
+    public ResponseEntity<PartidaCampeonatoDto> save(@RequestBody PartidaCampeonatoDto entity) {
+
+        PartidaCampeonato map = PartidaCampeonatoMapper.to(entity);
+        PartidaCampeonato save = partidaCampeonatoService.save(map);
+        PartidaCampeonatoDto find = PartidaCampeonatoMapper.to(save);
+
         return ResponseEntity.ok(find);
     }
 
     @PutMapping("update")
-    public ResponseEntity<PartidaCampeonato> updateSituacao(
+    public ResponseEntity<PartidaCampeonatoDto> updateSituacao(
         @RequestParam(name = "id") String id, 
         @RequestParam(name = "situacao") EnumSituacao situacao,
         @RequestParam(name = "vencedor") EnumVencedor vencedor) {
 
         PartidaCampeonato find = partidaCampeonatoService.updateSituacao(UUID.fromString(id), situacao, vencedor);
         
-        return ResponseEntity.ok(find);
+        PartidaCampeonatoDto map = PartidaCampeonatoMapper.to(find);
+        
+        return ResponseEntity.ok(map);
     }
 
     @PutMapping("delete")
-    public ResponseEntity<PartidaCampeonato> delete(@RequestParam(name = "id") String id) {
-        
-        PartidaCampeonato find = partidaCampeonatoService.delete(UUID.fromString(id));
+    public ResponseEntity<PartidaCampeonatoDto> delete(@RequestParam(name = "id") String id) {
+
+        PartidaCampeonato delete = partidaCampeonatoService.delete(UUID.fromString(id));
+        PartidaCampeonatoDto find = PartidaCampeonatoMapper.to(delete);
         
         return ResponseEntity.ok(find);
     }

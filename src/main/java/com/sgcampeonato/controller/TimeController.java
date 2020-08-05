@@ -1,5 +1,7 @@
 package com.sgcampeonato.controller;
 
+import com.sgcampeonato.application.dto.TimeDto;
+import com.sgcampeonato.application.mappers.TimeMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,44 +34,59 @@ public class TimeController extends BaseController {
     }
 
     @GetMapping("list")
-    public ResponseEntity<Page<Time>> list(
-        @RequestParam(name = "page") int page) {
+    public ResponseEntity<Page<TimeDto>> list(@RequestParam(name = "page") int page) {
 
-        Page<Time> list = timeService.list(page);
-        
+        Page<TimeDto> list = timeService.list(page)
+        .map(model -> TimeMapper.to(model));
+
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("list/name")
+    public ResponseEntity<Page<TimeDto>> listName(@RequestParam(name = "page") int page,
+    @RequestParam(name = "name") String name) {
+
+        Page<TimeDto> list = timeService.listName(page, name)
+        .map(model -> TimeMapper.to(model));
+
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("find")
-    public ResponseEntity<Time> find(
-        @RequestParam(name = "id") String id) {
+    public ResponseEntity<TimeDto> find(@RequestParam(name = "id") String id) {
 
         Time find = timeService.find(UUID.fromString(id));
-        
-        return ResponseEntity.ok(find);
+        TimeDto findDto = TimeMapper.to(find);
+
+        return ResponseEntity.ok(findDto);
     }
 
     @PostMapping("save")
-    public ResponseEntity<Time> save(@RequestBody Time entity)  {
-        
-        Time find = timeService.save(entity);
-        
+    public ResponseEntity<TimeDto> save(@RequestBody TimeDto entity) {
+
+        Time map = TimeMapper.to(entity);
+        Time save = timeService.save(map);
+        TimeDto find = TimeMapper.to(save);
+
         return ResponseEntity.ok(find);
     }
 
     @PutMapping("update")
-    public ResponseEntity<Time> update(@RequestBody Time entity) {
-        
-        Time find = timeService.update(entity);
-        
+    public ResponseEntity<TimeDto> update(@RequestBody TimeDto entity) {
+                
+        Time map = TimeMapper.to(entity);
+        Time save = timeService.update(map);
+        TimeDto find = TimeMapper.to(save);
+
         return ResponseEntity.ok(find);
     }
 
     @PutMapping("delete")
-    public ResponseEntity<Time> delete(@RequestParam(name = "id") String id) {
-        
-        Time find = timeService.delete(UUID.fromString(id));
-        
+    public ResponseEntity<TimeDto> delete(@RequestParam(name = "id") String id) {
+
+        Time delete = timeService.delete(UUID.fromString(id));
+        TimeDto find = TimeMapper.to(delete);
+
         return ResponseEntity.ok(find);
     }
 }

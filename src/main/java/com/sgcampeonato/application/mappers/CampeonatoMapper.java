@@ -17,13 +17,16 @@ public class CampeonatoMapper {
         return map;
     }
 
-    public static Campeonato to(CampeonatoDto dto) {
+    public static Campeonato to(CampeonatoDto model) {
         Campeonato map = new Campeonato();
-        map.setId(UUID.fromString(dto.id));
-        map.setDateInit(LocalDateTime.parse(dto.dateInit));
-        map.setDateEnd(LocalDateTime.parse(dto.dateEnd));
-        map.setName(dto.name);
-        return map; 
+        if (model.id == null)
+            model.id = UUID.randomUUID().toString();
+            
+        map.setId(UUID.fromString(model.id));
+        map.setDateInit(LocalDateTime.parse(model.dateInit));
+        map.setDateEnd(LocalDateTime.parse(model.dateEnd));
+        map.setName(model.name);
+        return map;
     }
-    
+
 }

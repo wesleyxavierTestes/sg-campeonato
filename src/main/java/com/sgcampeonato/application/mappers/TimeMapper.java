@@ -1,6 +1,9 @@
 package com.sgcampeonato.application.mappers;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import com.sgcampeonato.application.dto.CampeonatoDto;
 import com.sgcampeonato.application.dto.PartidaCampeonatoDto;
@@ -9,13 +12,10 @@ import com.sgcampeonato.core.entitys.campeonato.Campeonato;
 import com.sgcampeonato.core.entitys.partidaCampeonato.PartidaCampeonato;
 import com.sgcampeonato.core.entitys.time.Time;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.config.Configuration.AccessLevel;
-
 public class TimeMapper {
 
-    public static TimeDto to(Time model) {       
-        
+    public static TimeDto to(Time model) {
+
         List<PartidaCampeonatoDto> partidas = new ArrayList<>();
         for (PartidaCampeonato partidaCampeonato : model.getPartidas()) {
             partidaCampeonato.setCampeonato(null);
@@ -29,7 +29,7 @@ public class TimeMapper {
             campeonato.setPartidasCampeonato(null);
             campeonatos.add(ModelMapperBase.get().map(campeonato, CampeonatoDto.class));
         }
-        
+
         TimeDto map = ModelMapperBase.get().map(model, TimeDto.class);
 
         map.partidas = partidas;
@@ -40,24 +40,32 @@ public class TimeMapper {
 
     public static Time to(TimeDto model) {
         List<PartidaCampeonato> partidas = new ArrayList<>();
-        for (PartidaCampeonatoDto partidaCampeonato : model.partidas) {
-            partidaCampeonato.campeonato = (null);
-            partidaCampeonato.timeA = (null);
-            partidaCampeonato.timeB = (null);
-            partidas.add(ModelMapperBase.get().map(partidaCampeonato, PartidaCampeonato.class));
-        }
+        if (Objects.nonNull(model.partidas))
+            for (PartidaCampeonatoDto partidaCampeonato : model.partidas) {
+                partidaCampeonato.campeonato = (null);
+                partidaCampeonato.timeA = (null);
+                partidaCampeonato.timeB = (null);
+                if (partidaCampeonato.id == null)
+                    partidaCampeonato.id = UUID.randomUUID().toString();
+                partidas.add(ModelMapperBase.get().map(partidaCampeonato, PartidaCampeonato.class));
+            }
 
         List<Campeonato> campeonatos = new ArrayList<>();
-        for (CampeonatoDto campeonato : model.campeonatos) {
-            campeonatos.add(ModelMapperBase.get().map(campeonato, Campeonato.class));
-        }
-        
+        if (Objects.nonNull(model.campeonatos))
+            for (CampeonatoDto campeonato : model.campeonatos) {
+                if (campeonato.id == null)
+                    campeonato.id = UUID.randomUUID().toString();
+                campeonatos.add(ModelMapperBase.get().map(campeonato, Campeonato.class));
+            }
+
+        if (model.id == null)
+            model.id = UUID.randomUUID().toString();
         Time map = ModelMapperBase.get().map(model, Time.class);
 
-        map.setPartidas( partidas);
+        map.setPartidas(partidas);
         map.setCampeonatos(campeonatos);
 
         return map;
     }
-    
+
 }
