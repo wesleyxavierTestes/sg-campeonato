@@ -1,0 +1,13 @@
+package com.sgcampeonato.infra.repositorys;
+
+import java.util.UUID;
+
+import com.sgcampeonato.core.entitys.BaseEntity;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
+
+@NoRepositoryBean
+public interface BaseRepository<T extends BaseEntity> extends JpaRepository<T, UUID> {
+    
+}

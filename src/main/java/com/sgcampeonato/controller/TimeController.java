@@ -15,7 +15,6 @@ import com.sgcampeonato.utils.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,37 +55,37 @@ public class TimeController extends BaseController {
     public ResponseEntity<TimeDto> find(@RequestParam(name = "id") String id) {
 
         Time find = timeService.find(UUID.fromString(id));
+        
         TimeDto findDto = TimeMapper.to(find);
 
         return ResponseEntity.ok(findDto);
     }
 
     @PostMapping("save")
-    public ResponseEntity<TimeDto> save(@RequestBody TimeDto entity) {
+    public ResponseEntity<TimeDto> save(@RequestBody TimeDto entityDto) {
 
-        Time map = TimeMapper.to(entity);
-        Time save = timeService.save(map);
-        TimeDto find = TimeMapper.to(save);
+        Time entity = TimeMapper.to(entityDto);
+        
+        timeService.save(entity);
 
-        return ResponseEntity.ok(find);
+        return ResponseEntity.ok(TimeMapper.to(entity));
     }
 
     @PutMapping("update")
-    public ResponseEntity<TimeDto> update(@RequestBody TimeDto entity) {
+    public ResponseEntity<TimeDto> update(@RequestBody TimeDto entityDto) {
                 
-        Time map = TimeMapper.to(entity);
-        Time save = timeService.update(map);
-        TimeDto find = TimeMapper.to(save);
+        Time entity = TimeMapper.to(entityDto);
+        
+        timeService.update(entity);
 
-        return ResponseEntity.ok(find);
+        return ResponseEntity.ok(TimeMapper.to(entity));
     }
 
     @PutMapping("delete")
     public ResponseEntity<TimeDto> delete(@RequestParam(name = "id") String id) {
 
-        Time delete = timeService.delete(UUID.fromString(id));
-        TimeDto find = TimeMapper.to(delete);
+        Time entity = timeService.delete(UUID.fromString(id));
 
-        return ResponseEntity.ok(find);
+        return ResponseEntity.ok(TimeMapper.to(entity));
     }
 }

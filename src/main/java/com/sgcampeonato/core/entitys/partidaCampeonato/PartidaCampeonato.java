@@ -1,6 +1,7 @@
 package com.sgcampeonato.core.entitys.partidaCampeonato;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -53,8 +54,16 @@ public class PartidaCampeonato extends BaseEntity {
     @Column(nullable = false)
     private EnumSituacao situacao;
 
-    public int ponto(Time time) {
-        if (situacao == EnumSituacao.Finalizada) {
+    /**
+     * Critério
+     * 1. Empate = 1
+     * 2. Vitóroa = 3
+     * 3. Derrota = 0
+     * @param time
+     * @return
+     */
+    public int getPontoPorTime(Time time) {
+        if (this.situacao == EnumSituacao.Finalizada) {
             if (this.vencedor.equals(EnumVencedor.Empate))
                 return 1;
             if (validarVitoriaTimeA(time))
@@ -65,7 +74,16 @@ public class PartidaCampeonato extends BaseEntity {
         return 0;
     }
 
-    public int gols(Time time) {
+    public int getSaldoGolsPorTime(Time time) {
+        if (isTimeA(time))
+            return this.golsA - this.golsB;
+        else if (isTimeB(time))
+            return this.golsB - this.golsA;
+        else
+            return 0;
+    }
+
+    public int getGolsEfetuadoPorTime(Time time) {
         if (isTimeA(time))
             return this.golsA;
         else if (isTimeB(time))
@@ -74,8 +92,17 @@ public class PartidaCampeonato extends BaseEntity {
             return 0;
     }
 
+    public int getGolsRecebidoPorTime(Time time) {
+        if (isTimeA(time))
+            return this.golsB;
+        else if (isTimeB(time))
+            return this.golsA;
+        else
+            return 0;
+    }
+
     private boolean validarVitoriaTimeB(Time time) {
-        return this.vencedor.equals(EnumVencedor.TimeB) && isTimeB(time);
+        return Objects.nonNull(this.vencedor) && this.vencedor.equals(EnumVencedor.TimeB) && isTimeB(time);
     }
 
     private boolean isTimeB(Time time) {
@@ -83,7 +110,7 @@ public class PartidaCampeonato extends BaseEntity {
     }
 
     private boolean validarVitoriaTimeA(Time time) {
-        return this.vencedor.equals(EnumVencedor.TimeA) && isTimeA(time);
+        return Objects.nonNull(this.vencedor) && this.vencedor.equals(EnumVencedor.TimeA) && isTimeA(time);
     }
 
     private boolean isTimeA(Time time) {

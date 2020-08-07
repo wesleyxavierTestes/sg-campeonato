@@ -19,6 +19,7 @@ public class CampeonatoMapper {
 
     public static Campeonato to(CampeonatoDto model) {
         Campeonato map = new Campeonato();
+        
         if (model.id == null)
             model.id = UUID.randomUUID().toString();
             

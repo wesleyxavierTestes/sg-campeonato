@@ -47,6 +47,7 @@ public class PartidaCampeonatoMapper {
 
         if (model.campeonato.id == null)
             model.campeonato.id = UUID.randomUUID().toString();
+            
         map.setCampeonato(ModelMapperBase.get().map(model.campeonato, Campeonato.class));
         map.getCampeonato().setId(UUID.fromString(model.campeonato.id));
 

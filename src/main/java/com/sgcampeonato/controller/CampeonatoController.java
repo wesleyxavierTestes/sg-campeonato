@@ -2,7 +2,8 @@ package com.sgcampeonato.controller;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import javax.validation.constraints.NotNull;
 
 import com.sgcampeonato.application.dto.CampeonatoDto;
 import com.sgcampeonato.application.dto.ColocacaoDto;
@@ -17,6 +18,7 @@ import com.sgcampeonato.utils.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/campeonato")
+@Validated
 public class CampeonatoController extends BaseController {
 
     @Autowired
@@ -47,66 +50,73 @@ public class CampeonatoController extends BaseController {
     }
 
     @GetMapping("find")
-    public ResponseEntity<CampeonatoDto> find(@RequestParam(name = "id") String id) {
+    public ResponseEntity<CampeonatoDto> find(@RequestParam(name = "id") @NotNull String id) {
 
-        Campeonato find = campeonatoService.find(UUID.fromString(id));
-        CampeonatoDto findDto = CampeonatoMapper.to(find);
+        Campeonato entity = campeonatoService.find(UUID.fromString(id));
 
-        return ResponseEntity.ok(findDto);
+        return ResponseEntity.ok(CampeonatoMapper.to(entity));
     }
 
+    /**
+     * lista os times de um campeonato específico
+     * @param page
+     * @param id
+     * @return
+     */
     @GetMapping("list/times")
     public ResponseEntity<Page<TimeDto>> findTimes(
-        @RequestParam(name = "page") int page, @RequestParam(name = "id") String id) {
+        @RequestParam(name = "page") int page, @RequestParam(name = "id") @NotNull String id) {
 
-        Campeonato find = campeonatoService.find(UUID.fromString(id));
+        Campeonato entity = campeonatoService.find(UUID.fromString(id));
         
-        Page<Time> times = campeonatoService.times(find, page);
+        Page<Time> times = campeonatoService.findAllTimesCampeonato(entity, page);
 
         Page<TimeDto> timesDto = times.map(model -> TimeMapper.to(model));
 
         return ResponseEntity.ok(timesDto);
     }
 
+    /**
+     * lista a colocação dos times de um campeonato específico
+     * @param page
+     * @param id
+     * @return
+     */
     @GetMapping("list/times/colocacao")
-    public ResponseEntity<List<ColocacaoDto>> findTimesColocacao(@RequestParam(name = "id") String id) {
+    public ResponseEntity<List<ColocacaoDto>> findTimesColocacao(@RequestParam(name = "id") @NotNull String id) {
 
-        Campeonato find = campeonatoService.find(UUID.fromString(id));
+        Campeonato entity = campeonatoService.find(UUID.fromString(id));
         
-        campeonatoService.configurePartidas(find);  
-
-        List<ColocacaoDto> times = find.colocacaoTimes();
+        List<ColocacaoDto> times = campeonatoService.colocacaoTimes(entity);
 
         return ResponseEntity.ok(times);
     }
 
-    
     @PostMapping("save")
-    public ResponseEntity<CampeonatoDto> save(@RequestBody CampeonatoDto entity) {
+    public ResponseEntity<CampeonatoDto> save(@RequestBody CampeonatoDto entityDto) {
 
-        Campeonato map = CampeonatoMapper.to(entity);
-        Campeonato save = campeonatoService.save(map);
-        CampeonatoDto find = CampeonatoMapper.to(save);
+        Campeonato entity = CampeonatoMapper.to(entityDto);
+        
+        campeonatoService.save(entity);
 
-        return ResponseEntity.ok(find);
+        return ResponseEntity.ok(CampeonatoMapper.to(entity));
     }
 
     @PutMapping("update")
-    public ResponseEntity<CampeonatoDto> update(@RequestBody CampeonatoDto entity) {
+    public ResponseEntity<CampeonatoDto> update(@RequestBody CampeonatoDto entityDto) {
 
-        Campeonato map = CampeonatoMapper.to(entity);
-        Campeonato update = campeonatoService.update(map);
-        CampeonatoDto find = CampeonatoMapper.to(update);
+        Campeonato entity = CampeonatoMapper.to(entityDto);
+        
+        campeonatoService.update(entity);
 
-        return ResponseEntity.ok(find);
+        return ResponseEntity.ok(CampeonatoMapper.to(entity));
     }
 
     @PutMapping("delete")
     public ResponseEntity<CampeonatoDto> delete(@RequestParam(name = "id") String id) {
 
-        Campeonato delete = campeonatoService.delete(UUID.fromString(id));
-        CampeonatoDto find = CampeonatoMapper.to(delete);
+        Campeonato entity = campeonatoService.delete(UUID.fromString(id));
 
-        return ResponseEntity.ok(find);
+        return ResponseEntity.ok(CampeonatoMapper.to(entity));
     }
 }

@@ -15,6 +15,7 @@ public abstract class BaseController {
     
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<String> error(DataAccessException ex) {
-        return ResponseEntity.badRequest().body("Erro de banco de dados" + ex.getMessage());
+        String mensagemErro = String.format("Erro de banco de dados %s", ex.getMessage());
+        return ResponseEntity.badRequest().body(mensagemErro);
     } 
 }

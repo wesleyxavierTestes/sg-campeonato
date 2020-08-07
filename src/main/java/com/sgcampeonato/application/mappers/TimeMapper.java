@@ -40,7 +40,8 @@ public class TimeMapper {
 
     public static Time to(TimeDto model) {
         List<PartidaCampeonato> partidas = new ArrayList<>();
-        if (Objects.nonNull(model.partidas))
+
+        if (Objects.nonNull(model.partidas)) {
             for (PartidaCampeonatoDto partidaCampeonato : model.partidas) {
                 partidaCampeonato.campeonato = (null);
                 partidaCampeonato.timeA = (null);
@@ -49,6 +50,7 @@ public class TimeMapper {
                     partidaCampeonato.id = UUID.randomUUID().toString();
                 partidas.add(ModelMapperBase.get().map(partidaCampeonato, PartidaCampeonato.class));
             }
+        }
 
         List<Campeonato> campeonatos = new ArrayList<>();
         if (Objects.nonNull(model.campeonatos))
@@ -60,6 +62,7 @@ public class TimeMapper {
 
         if (model.id == null)
             model.id = UUID.randomUUID().toString();
+            
         Time map = ModelMapperBase.get().map(model, Time.class);
 
         map.setPartidas(partidas);

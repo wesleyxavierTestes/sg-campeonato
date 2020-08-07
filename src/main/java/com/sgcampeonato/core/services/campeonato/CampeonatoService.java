@@ -1,8 +1,12 @@
 package com.sgcampeonato.core.services.campeonato;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.sgcampeonato.application.dto.ColocacaoDto;
 import com.sgcampeonato.core.entitys.campeonato.Campeonato;
 import com.sgcampeonato.core.entitys.partidaCampeonato.PartidaCampeonato;
 import com.sgcampeonato.core.entitys.time.Time;
@@ -17,8 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CampeonatoService extends BaseService<Campeonato> {
-
+public class CampeonatoService extends BaseService<Campeonato, CampeonatoRepository> {
 
     @Autowired
     private PartidaCampeonatoRepository partidaRepository;
@@ -28,15 +31,40 @@ public class CampeonatoService extends BaseService<Campeonato> {
         super(repository);
     }
 
-    public void configurePartidas(Campeonato entity) {
-        List<PartidaCampeonato> partidasCampeonato = this.partidaRepository.findPartidas(entity.getId()).stream()
-                .map(c -> this.partidaRepository.findById(c.getId()).get()).collect(Collectors.toList());
-        entity.setPartidasCampeonato(partidasCampeonato);
+    public List<PartidaCampeonato> buscaPartidasCampeonato(UUID id) {
+        
+        Collection<PartidaCampeonato> findPartidas = this.partidaRepository.findPartidas(id);
+
+        Stream<PartidaCampeonato> partidasCampeonato = findPartidas.stream()
+                .map(c -> this.partidaRepository.findById(c.getId()).get());
+
+        return partidasCampeonato.collect(Collectors.toList());
+
     }
 
-    public Page<Time> times(Campeonato entity, int page) {
-        configurePartidas(entity);
-        Page<Time> findAllByIds = new PageImpl<>(entity.times(), PageRequest.of((page - 1), 10), entity.times().size());
+    /**
+     * Busca no banco todas as partidas do campeonato, seta no campeonato
+     * E lista todas os times dessas partidas;
+     * @param entity
+     * @param page
+     * @return
+     */
+    public Page<Time> findAllTimesCampeonato(Campeonato entity, int page) {
+        List<PartidaCampeonato> partidasCampeonato = buscaPartidasCampeonato(entity.getId());
+
+        entity.setPartidasCampeonato(partidasCampeonato);
+
+        List<Time> timesPorPartidasCampeonato = entity.buscaTimesPorPartidasCampeonato();
+
+        Page<Time> findAllByIds = new PageImpl<>(timesPorPartidasCampeonato, PageRequest.of((page - 1), 10),
+                timesPorPartidasCampeonato.size());
+
         return findAllByIds;
     }
+
+	public List<ColocacaoDto> colocacaoTimes(Campeonato entity) {
+		List<PartidaCampeonato> buscaPartidasCampeonato = this.buscaPartidasCampeonato(entity.getId());
+        
+        return entity.colocacaoTimes(buscaPartidasCampeonato);
+	}
 }

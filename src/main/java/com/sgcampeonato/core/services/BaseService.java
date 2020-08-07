@@ -5,16 +5,16 @@ import java.util.UUID;
 
 import com.sgcampeonato.application.exceptions.RegraBaseException;
 import com.sgcampeonato.core.entitys.BaseEntity;
+import com.sgcampeonato.infra.repositorys.BaseRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public abstract class BaseService<T extends BaseEntity> {
+public abstract class BaseService<T extends BaseEntity, Y extends BaseRepository<T>> {
 
-    protected final JpaRepository<T, UUID> _repository;
+    protected final Y _repository;
 
-    public BaseService(JpaRepository<T, UUID> repository) {
+    public BaseService(Y repository) {
         _repository = repository;
     }
 
@@ -24,6 +24,7 @@ public abstract class BaseService<T extends BaseEntity> {
 
     public T find(UUID id) {
         Optional<T> optional = this._repository.findById(id);
+
         if (!optional.isPresent())
             throw new RegraBaseException("Busca Inválida item inexistente");
             
@@ -39,20 +40,23 @@ public abstract class BaseService<T extends BaseEntity> {
 
     public T update(T entity) {
         Optional<T> optional = this._repository.findById(entity.getId());
-        if (!optional.isPresent()) {
+
+        if (!optional.isPresent())
             throw new RegraBaseException("Item inexistente");
-        }
 
         this._repository.save(entity);
+
         return entity;
     }
 
     public T delete(UUID id) {
         Optional<T> optional = this._repository.findById(id);
+        
         if (!optional.isPresent())
             throw new RegraBaseException("Item inexistente");
 
         this._repository.deleteById(id);
+
         return optional.get();
     }
 }
